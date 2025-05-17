@@ -1,0 +1,64 @@
+name: Python CI (Poetry + Docker + Tests)
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      weaviate:
+        image: semitechnologies/weaviate:1.25.1
+        ports:
+          - 8080:8080
+        env:
+          AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+          PERSISTENCE_DATA_PATH: /var/lib/weaviate/data
+          QUERY_DEFAULTS_LIMIT: 20
+          CLUSTER_HOSTNAME: node1
+          GRPC_ENABLED: "true"
+        options: >-
+          --health-cmd "curl -f http://localhost:8080/v1/.well-known/ready || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Configure Poetry
+      run: poetry config virtualenvs.create false
+
+    - name: Install dependencies
+      run: poetry install --no-interaction --no-ansi
+
+    - name: Create .env file
+      run: |
+        echo "RAG_EMBEDDING_MODEL=${{ secrets.RAG_EMBEDDING_MODEL }}" >> .env
+        echo "RAG_CHAT_MODEL=${{ secrets.RAG_CHAT_MODEL }}" >> .env
+        echo "HUGGING_FACE_API_KEY=${{ secrets.HUGGING_FACE_API_KEY }}" >> .env
+        echo "OLLAMA_HOST=http://localhost:11434" >> .env
+        echo "WEAVIATE_HOST=http://localhost:8080" >> .env
+
+    - name: Lint with Ruff
+      run: poetry run ruff check .
+
+    - name: Type check with MyPy
+      run: poetry run mypy tunedd_api
+
+    - name: Run tests with pytest
+      run: poetry run pytest -v tests/

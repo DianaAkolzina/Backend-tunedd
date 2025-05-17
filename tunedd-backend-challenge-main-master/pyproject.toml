@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "tunedd-api"
+version = "0.1.0"
+description = ""
+authors = ["jkr <clnd@duck.com>"]
+readme = "README.md"
+package-mode = false
+
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+haystack-ai = "^2.10.3"
+fastapi = "0.115.8"
+weaviate-client = "^4.11.0"
+python-dotenv = "^1.0.1"
+pypdf = "^5.3.0"
+ollama-haystack = "^2.3.0"
+weaviate-haystack = "^5.0.0"
+uvicorn = "^0.34.0"
+huggingface-hub = "^0.29.1"
+pytest = "^8.3.4"
+httpx = "^0.28.1"
+black = "^25.1.0"
+ruff = "^0.9.7"
+mypy = "^1.15.0"
+python-multipart = "^0.0.6"
+
+[tool.poetry.scripts]
+start = "tunedd_api.main:start"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+ignore_missing_imports = true

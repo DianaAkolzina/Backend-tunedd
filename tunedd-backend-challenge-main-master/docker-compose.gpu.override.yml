@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  ollama:
+    environment:
+      OLLAMA_MAX_LOADED_MODELS: 2  # Embedding and chat model
+      OLLAMA_NUM_PARALLEL: 10
+      ENABLE_CUDA: 1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]

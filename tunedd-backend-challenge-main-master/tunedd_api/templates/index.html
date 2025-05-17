@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tunedd RAG Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+        }
+
+        form {
+            margin-bottom: 2em;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 0.5em;
+        }
+
+        button {
+            padding: 0.5em 1em;
+        }
+
+        h3 {
+            margin-top: 2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Tunedd Chatbot</h1>
+
+    <form action="/conversations/create" method="post">
+        <label for="documents">Choose documents (comma-separated filenames):</label><br>
+        <input type="text" name="documents" placeholder="e.g. paper1.pdf, paper2.pdf" required>
+        <button type="submit">Start New Conversation</button>
+    </form>
+
+    <h3>Existing Conversations</h3>
+    <ul>
+        {% for cid in conversations %}
+            <li><a href="/conversations/{{ cid }}/chat">{{ cid }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
