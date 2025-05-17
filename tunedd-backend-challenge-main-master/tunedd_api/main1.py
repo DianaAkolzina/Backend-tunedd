@@ -131,14 +131,22 @@ def load_documents():
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
+    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/ai-agents-arxiv-papers"))
+    pdfs = [f for f in os.listdir(data_dir) if f.endswith(".pdf")]
+
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "conversations": list(conversations.keys())
-    })
+        "conversations": list(conversations.keys()),
+        "available_documents": pdfs
+})
+
 
 @app.post("/conversations/create", response_class=HTMLResponse)
 def create_conversation(request: Request, documents: str = Form(...)):
-    doc_list = [doc.strip() for doc in documents.split(",") if doc.strip()]
+    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/ai-agents-arxiv-papers"))
+    all_pdfs = [f for f in os.listdir(data_dir) if f.endswith(".pdf")]
+    doc_list = documents.split(",") if documents else all_pdfs
+
     cid = str(uuid.uuid4())
     conversations[cid] = []
     conversation_docs[cid] = doc_list
