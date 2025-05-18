@@ -83,6 +83,19 @@
         .loading.active {
             display: block;
         }
+
+        .doc-list {
+            margin-top: 1em;
+            font-size: 0.9em;
+        }
+
+        .doc-list ul {
+            padding-left: 1.2em;
+        }
+
+        .doc-list li {
+            margin-bottom: 0.3em;
+        }
     </style>
     <script>
         function showLoading() {
@@ -95,6 +108,19 @@
         <h3>Conversation</h3>
         <p><strong>{{ conversation_id }}</strong></p>
         <a href="/">← Back to Home</a>
+
+        <div class="doc-list">
+            <h4>Included Documents</h4>
+            {% if documents %}
+                <ul>
+                    {% for doc in documents %}
+                        <li>{{ doc }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No documents selected.</p>
+            {% endif %}
+        </div>
     </div>
 
     <div class="main">

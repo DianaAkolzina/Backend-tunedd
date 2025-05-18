@@ -12,21 +12,22 @@
             margin-bottom: 2em;
         }
 
-        input[type="text"] {
-            width: 80%;
-            padding: 0.5em;
+        .checkboxes {
+            display: flex;
+            flex-direction: column;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 1em;
+            margin-bottom: 1em;
         }
 
-        button {
+        input[type="submit"] {
             padding: 0.5em 1em;
         }
 
         h3 {
             margin-top: 2em;
-        }
-
-        .checkbox-group {
-            margin-bottom: 1em;
         }
     </style>
 </head>
@@ -34,11 +35,12 @@
     <h1>Welcome to Tunedd Chatbot</h1>
 
     <form method="post" action="/conversations/create">
-        <label for="documents">Select documents (optional):</label><br>
-        {% for doc in documents %}
-            <input type="checkbox" name="documents" value="{{ doc }}"> {{ doc }}<br>
-        {% endfor %}
-        <br>
+        <label>Select documents (optional):</label><br>
+        <div class="checkboxes">
+            {% for doc in documents %}
+                <label><input type="checkbox" name="documents" value="{{ doc }}"> {{ doc }}</label>
+            {% endfor %}
+        </div>
         <input type="submit" value="Start Conversation">
     </form>
 
@@ -50,6 +52,3 @@
     </ul>
 </body>
 </html>
-
-
-
