@@ -34,14 +34,11 @@
     <h1>Welcome to Tunedd Chatbot</h1>
 
     <form method="post" action="/conversations/create">
-        <label>Select documents (optional, defaults to all):</label><br>
-        <div class="checkbox-group">
-            {% for doc in documents %}
-                <label>
-                    <input type="checkbox" name="documents" value="{{ doc }}"> {{ doc }}
-                </label><br>
-            {% endfor %}
-        </div>
+        <label for="documents">Select documents (optional):</label><br>
+        {% for doc in documents %}
+            <input type="checkbox" name="documents" value="{{ doc }}"> {{ doc }}<br>
+        {% endfor %}
+        <br>
         <input type="submit" value="Start Conversation">
     </form>
 
@@ -53,3 +50,6 @@
     </ul>
 </body>
 </html>
+
+
+

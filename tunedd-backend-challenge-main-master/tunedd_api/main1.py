@@ -168,13 +168,31 @@ def send_message(request: Request, conversation_id: str, message: str = Form(...
         raise HTTPException(status_code=404, detail="Conversation not found.")
 
     chat_history = conversations[conversation_id]
+    selected_docs = conversation_docs.get(conversation_id, all_pdfs)
+
     pipeline = get_query_pipeline()
 
     result = pipeline.run({
+        "embedder": {"text": message}
+    })
+
+    embedding = result["embedder"]["embedding"]
+    retriever = pipeline.get_component("retriever")
+    retrieved = retriever.run({"query_embedding": embedding})
+
+    # Filter documents based on selected documents
+    relevant_docs = [
+        doc for doc in retrieved["documents"]
+        if doc.metadata and doc.metadata.get("source") in selected_docs
+    ]
+
+    result = pipeline.run({
         "embedder": {"text": message},
+        "retriever.query_embedding": embedding,
         "prompt_builder": {
             "conversation": chat_history,
-            "question": message
+            "question": message,
+            "documents": relevant_docs
         }
     })
 
@@ -186,6 +204,7 @@ def send_message(request: Request, conversation_id: str, message: str = Form(...
         "conversation_id": conversation_id,
         "messages": chat_history
     })
+
 
 if __name__ == "__main__":
     uvicorn.run("tunedd_api.main1:app", host="0.0.0.0", port=8000, reload=True)
