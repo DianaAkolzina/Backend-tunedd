@@ -67,6 +67,9 @@ Question: {{ question }}
 prompt_builder = PromptBuilder(template=prompt_template)
 _pipeline_process_query = None
 
+pdfs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/ai-agents-arxiv-papers"))
+all_pdfs = [f for f in os.listdir(pdfs_dir) if f.endswith(".pdf")]
+
 def wait_for_ollama():
     logger.info("Waiting for Ollama to be ready...")
     while True:
@@ -95,8 +98,7 @@ def load_and_index_documents():
     pipeline.connect("splitter", "embedder.documents")
     pipeline.connect("embedder", "writer")
 
-    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/ai-agents-arxiv-papers"))
-    pdfs = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f.endswith(".pdf")]
+    pdfs = [os.path.join(pdfs_dir, f) for f in all_pdfs]
     logger.info(f"Found {len(pdfs)} PDF files")
 
     pipeline.run({"converter": {"sources": pdfs}})
@@ -131,22 +133,15 @@ def load_documents():
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/ai-agents-arxiv-papers"))
-    pdfs = [f for f in os.listdir(data_dir) if f.endswith(".pdf")]
-
     return templates.TemplateResponse("index.html", {
         "request": request,
         "conversations": list(conversations.keys()),
-        "available_documents": pdfs
-})
-
+        "documents": all_pdfs
+    })
 
 @app.post("/conversations/create", response_class=HTMLResponse)
-def create_conversation(request: Request, documents: str = Form(...)):
-    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/ai-agents-arxiv-papers"))
-    all_pdfs = [f for f in os.listdir(data_dir) if f.endswith(".pdf")]
-    doc_list = documents.split(",") if documents else all_pdfs
-
+def create_conversation(request: Request, documents: List[str] = Form(None)):
+    doc_list = documents if documents else all_pdfs
     cid = str(uuid.uuid4())
     conversations[cid] = []
     conversation_docs[cid] = doc_list

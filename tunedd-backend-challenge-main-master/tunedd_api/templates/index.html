@@ -24,21 +24,26 @@
         h3 {
             margin-top: 2em;
         }
+
+        .checkbox-group {
+            margin-bottom: 1em;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to Tunedd Chatbot</h1>
 
     <form method="post" action="/conversations/create">
-        <label for="documents">Select documents (optional):</label><br>
-        <select name="documents" multiple size="5">
-            {% for doc in available_documents %}
-                <option value="{{ doc }}">{{ doc }}</option>
+        <label>Select documents (optional, defaults to all):</label><br>
+        <div class="checkbox-group">
+            {% for doc in documents %}
+                <label>
+                    <input type="checkbox" name="documents" value="{{ doc }}"> {{ doc }}
+                </label><br>
             {% endfor %}
-        </select><br><br>
+        </div>
         <input type="submit" value="Start Conversation">
     </form>
-
 
     <h3>Existing Conversations</h3>
     <ul>
